@@ -62,7 +62,7 @@ public class CursoControl {
               }
           }
       } catch (SQLException e) {
-          e.printStackTrace(); // Lide com a exceção apropriadamente
+          e.printStackTrace(); 
       }
   }
 
@@ -79,13 +79,13 @@ public class CursoControl {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // Lide com a exceção apropriadamente
+            e.printStackTrace(); 
         }
     }
 
     private CursoEntity buscarCursoNoBanco(int idPesquisa) {
-        // Lógica para buscar curso no banco de dados
-        // (Implemente de acordo com a sua necessidade)
+        
         return null;
     }
+
 }
