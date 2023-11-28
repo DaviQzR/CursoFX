@@ -10,7 +10,7 @@ public class CursoControl {
 
     private List<CursoEntity> cursos = new ArrayList<>();
 
-    // Ajuste as configurações do seu banco de dados
+    // Ajustando as configurações do  banco de dados
     private static final String USUARIO = "Davi";
     private static final String SENHA = "123456";
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=curso;user=" + USUARIO + ";password=" + SENHA + ";encrypt=false;";
@@ -130,8 +130,7 @@ public class CursoControl {
     }
 
     private CursoEntity buscarCursoNoBanco(int idPesquisa) {
-        // Lógica para buscar curso no banco de dados
-        // (Implemente de acordo com a sua necessidade)
+        
         return null;
     }
 }
