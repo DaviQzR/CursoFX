@@ -2,30 +2,25 @@ package View;
 
 import Model.CursoEntity;
 import javafx.application.Application;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import javafx.util.converter.NumberStringConverter;
 
 public class CursoBoundary extends Application {
 
     private CursoControl cursoControl = new CursoControl();
 
-    private IntegerProperty txtId = new SimpleIntegerProperty();
-    private StringProperty txtNome = new SimpleStringProperty();
-    private IntegerProperty txtCodigo = new SimpleIntegerProperty();
-    private StringProperty txtCoordenador = new SimpleStringProperty();
-    private IntegerProperty txtQuantidade = new SimpleIntegerProperty();
+    private TextField txtId = new TextField();
+    private TextField txtNome = new TextField();
+    private TextField txtCodigo = new TextField();
+    private TextField txtCoordenador = new TextField();
+    private TextField txtQuantidade = new TextField();
 
-    private Button btnAdicionar, btnPesquisar;
+    private Button btnAdicionar = new Button("Adicionar");
+    private Button btnPesquisar = new Button("Pesquisar");
 
     public static void main(String[] args) {
         launch(args);
@@ -37,7 +32,7 @@ public class CursoBoundary extends Application {
 
         Pane root = new Pane();
 
-        CamposTexto(root);
+        criarCamposTexto(root);
         criarBotoes(root);
 
         Scene scene = new Scene(root, 400, 300);
@@ -45,91 +40,88 @@ public class CursoBoundary extends Application {
         primaryStage.show();
     }
 
-    private void CamposTexto(Pane root) {
-        LabelETextField("ID:", txtId, 20, 20, 200, 20, root);
-        LabelETextField("Nome:", txtNome, 20, 60, 200, 60, root);
-        LabelETextField("Código do Curso:", txtCodigo, 20, 100, 200, 100, root);
-        LabelETextField("Nome do Coordenador:", txtCoordenador, 20, 140, 200, 140, root);
-        LabelETextField("Quantidade de Alunos:", txtQuantidade, 20, 180, 200, 180, root);
+    private void criarCamposTexto(Pane root) {
+        adicionarLabelETextField("ID:", txtId, 20, 20, 200, 20, root);
+        adicionarLabelETextField("Nome:", txtNome, 20, 60, 200, 60, root);
+        adicionarLabelETextField("Código do Curso:", txtCodigo, 20, 100, 200, 100, root);
+        adicionarLabelETextField("Nome do Coordenador:", txtCoordenador, 20, 140, 200, 140, root);
+        adicionarLabelETextField("Quantidade de Alunos:", txtQuantidade, 20, 180, 200, 180, root);
     }
 
-    private void LabelETextField(String labelText, Property<?> property, double labelX, double labelY, double fieldX, double fieldY, Pane root) {
-      Label label = new Label(labelText);
-      TextField textField = new TextField();
-  
-      // Vincula a propriedade ao campo de texto
-      if (property instanceof IntegerProperty) {
-          textField.textProperty().bindBidirectional((IntegerProperty) property, new NumberStringConverter());
-      } else if (property instanceof StringProperty) {
-          textField.textProperty().bindBidirectional((StringProperty) property);
-      }
-  
-      label.setLayoutX(labelX);
-      label.setLayoutY(labelY);
-      textField.setLayoutX(fieldX);
-      textField.setLayoutY(fieldY);
-  
-      // Adicionando o TextField ao root (Pane)
-      root.getChildren().addAll(label, textField);
-  }
-  
+    private void adicionarLabelETextField(String labelText, TextField textField, double labelX, double labelY, double fieldX, double fieldY, Pane root) {
+        Label label = new Label(labelText);
 
+        label.setLayoutX(labelX);
+        label.setLayoutY(labelY);
+        textField.setLayoutX(fieldX);
+        textField.setLayoutY(fieldY);
+
+        root.getChildren().addAll(label, textField);
+    }
 
     private void criarBotoes(Pane root) {
-        btnAdicionar = new Button("Adicionar");
-        btnPesquisar = new Button("Pesquisar");
-        configurarBotoes();
-
-        root.getChildren().addAll(btnAdicionar, btnPesquisar);
-    }
-
-    private void configurarBotoes() {
         btnAdicionar.setLayoutX(20);
         btnAdicionar.setLayoutY(220);
 
         btnPesquisar.setLayoutX(200);
         btnPesquisar.setLayoutY(220);
 
+        configurarBotoes();
+
+        root.getChildren().addAll(btnAdicionar, btnPesquisar);
+    }
+
+    private void configurarBotoes() {
         btnAdicionar.setOnAction(event -> adicionarCurso());
         btnPesquisar.setOnAction(event -> pesquisarCurso());
     }
 
     private void adicionarCurso() {
-        int id = txtId.get();
-        String nome = txtNome.get();
-        int codCurso = txtCodigo.get();
-        String coordenador = txtCoordenador.get();
-        int qtdAlunos = txtQuantidade.get();
+        try {
+            int id = Integer.parseInt(txtId.getText());
+            String nome = txtNome.getText();
+            int codCurso = Integer.parseInt(txtCodigo.getText());
+            String coordenador = txtCoordenador.getText();
+            int qtdAlunos = Integer.parseInt(txtQuantidade.getText());
 
-        cursoControl.adicionarCursoEntity(id, nome, codCurso, coordenador, qtdAlunos);
+            cursoControl.adicionarCursoEntity(id, nome, codCurso, coordenador, qtdAlunos);
 
-        limparCampos();
+            limparCampos();
+        } catch (NumberFormatException e) {
+            // Trate o erro de conversão de número aqui
+            e.printStackTrace();
+        }
     }
 
     private void pesquisarCurso() {
-        int idPesquisa = txtId.get();
-        CursoEntity cursoEncontrado = cursoControl.pesquisarCursoEntity(idPesquisa);
+        try {
+            int idPesquisa = Integer.parseInt(txtId.getText());
+            CursoEntity cursoEncontrado = cursoControl.pesquisarCursoEntity(idPesquisa);
 
-        if (cursoEncontrado != null) {
-            atualizarCamposTexto(cursoEncontrado);
-        } else {
-            limparCampos();
+            if (cursoEncontrado != null) {
+                atualizarCamposTexto(cursoEncontrado);
+            } else {
+                limparCampos();
+            }
+        } catch (NumberFormatException e) {
+            // Trate o erro de conversão de número aqui
+            e.printStackTrace();
         }
     }
 
     private void atualizarCamposTexto(CursoEntity curso) {
-        txtId.set(curso.getId());
-        txtNome.set(curso.getNome());
-        txtCodigo.set(curso.getCodCurso());
-        txtCoordenador.set(curso.getCoordenador());
-        txtQuantidade.set(curso.getQtdAlunos());
+        txtId.setText(String.valueOf(curso.getId()));
+        txtNome.setText(curso.getNome());
+        txtCodigo.setText(String.valueOf(curso.getCodCurso()));
+        txtCoordenador.setText(curso.getCoordenador());
+        txtQuantidade.setText(String.valueOf(curso.getQtdAlunos()));
     }
 
     private void limparCampos() {
-        txtId.set(0);
-        txtNome.set("");
-        txtCodigo.set(0);
-        txtCoordenador.set("");
-        txtQuantidade.set(0);
+        txtId.clear();
+        txtNome.clear();
+        txtCodigo.clear();
+        txtCoordenador.clear();
+        txtQuantidade.clear();
     }
 }
