@@ -13,7 +13,7 @@ public class CursoControl {
     // Ajustando as configurações do  banco de dados
     private static final String USUARIO = "Davi";
     private static final String SENHA = "123456";
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=curso;user=" + USUARIO + ";password=" + SENHA + ";encrypt=false;";
+    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=cursoFx;user=" + USUARIO + ";password=" + SENHA + ";encrypt=false;";
 
     public CursoControl() {
         // Carregar cursos do banco de dados na inicialização, se necessário
