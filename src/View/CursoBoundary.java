@@ -3,14 +3,13 @@ package View;
 import Model.CursoEntity;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.collections.FXCollections;
 
 public class CursoBoundary extends Application {
 
@@ -69,11 +68,9 @@ public class CursoBoundary extends Application {
 
         btnAdicionar.setOnAction(event -> adicionarCurso());
         btnPesquisar.setOnAction(event -> pesquisarCurso());
-        btnAtualizar.setOnAction(event -> atualizarCurso());
-        btnExcluir.setOnAction(event -> excluirCurso());
         btnLimpar.setOnAction(event -> limparSelecao());
 
-        hbox.getChildren().addAll(btnAdicionar, btnPesquisar, btnAtualizar, btnExcluir, btnLimpar);
+        hbox.getChildren().addAll(btnAdicionar, btnPesquisar, btnLimpar);
         root.getChildren().add(hbox);
     }
 
@@ -93,7 +90,37 @@ public class CursoBoundary extends Application {
         TableColumn<CursoEntity, Integer> colQuantidade = new TableColumn<>("Quantidade de Alunos");
         colQuantidade.setCellValueFactory(new PropertyValueFactory<>("qtdAlunos"));
 
-        tabelaCursos.getColumns().addAll(colId, colNome, colCodigo, colCoordenador, colQuantidade);
+        TableColumn<CursoEntity, Void> colAcoes = new TableColumn<>("Ações");
+        colAcoes.setCellFactory(param -> new TableCell<>() {
+            private final Button btnAtualizar = new Button("Atualizar");
+            private final Button btnExcluir = new Button("Excluir");
+
+            {
+                btnAtualizar.setOnAction(event -> {
+                    CursoEntity curso = getTableView().getItems().get(getIndex());
+                    preencherCampos(curso);
+                });
+
+                btnExcluir.setOnAction(event -> {
+                    CursoEntity curso = getTableView().getItems().get(getIndex());
+                    excluirCurso(curso);
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox hbox = new HBox(5);
+                    hbox.getChildren().addAll(btnAtualizar, btnExcluir);
+                    setGraphic(hbox);
+                }
+            }
+        });
+
+        tabelaCursos.getColumns().addAll(colId, colNome, colCodigo, colCoordenador, colQuantidade, colAcoes);
         tabelaCursos.setItems(FXCollections.observableArrayList(cursoControl.getCursos()));
 
         tabelaCursos.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -123,6 +150,8 @@ public class CursoBoundary extends Application {
 
             cursoControl.adicionarCursoEntity(id, nome, codCurso, coordenador, qtdAlunos);
 
+            tabelaCursos.getItems().add(new CursoEntity(id, nome, codCurso, coordenador, qtdAlunos));
+
             limparCampos();
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -144,27 +173,12 @@ public class CursoBoundary extends Application {
         }
     }
 
-    private void atualizarCurso() {
-        try {
-            int id = Integer.parseInt(txtId.getText());
-            String nome = txtNome.getText();
-            int codCurso = Integer.parseInt(txtCodigo.getText());
-            String coordenador = txtCoordenador.getText();
-            int qtdAlunos = Integer.parseInt(txtQuantidade.getText());
-
-            CursoEntity cursoAtualizado = new CursoEntity(id, nome, codCurso, coordenador, qtdAlunos);
-            cursoControl.atualizarCurso(cursoAtualizado);
-
-            limparCampos();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void excluirCurso() {
+    private void excluirCurso(CursoEntity curso) {
         try {
             int id = Integer.parseInt(txtId.getText());
             cursoControl.excluirCurso(id);
+
+            tabelaCursos.getItems().remove(curso);
 
             limparCampos();
         } catch (NumberFormatException e) {
